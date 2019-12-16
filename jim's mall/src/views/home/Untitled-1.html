@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <div id="app">
+    <smart-item :data="data"></smart-item>
+    <button @click="change('img')">切换为图片为组件</button>
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    // 图片组件选项
+    var ImgItem = {
+      props: ['data'], //这里的data还没有赋值
+      render: function (createElement) {
+        return createElement('div', [
+          createElement('p', '图片组件'),
+          createElement('img', {
+            attrs: {
+              src: this.data.url
+            }
+          })
+        ]);
+      }
+    }
+
+
+    Vue.component('smart-item', {
+      functional: true,
+      render: function (createElement, context) {
+        function getComponent() {
+
+          var data = context.props.data;
+
+          if (data.type === 'img') return ImgItem;
+
+        }
+        return createElement(
+          getComponent(), {
+            props: {
+              data: context.props.data //给ImgItem里面的data赋值
+            }
+          },
+          context.children
+        )
+      },
+      props: {
+        data: {
+          type: Object,
+          required: true
+        }
+      }
+    });
+    new Vue({
+      el: '#app',
+      data() {
+        return {
+          data: {}
+        }
+      },
+      methods: {
+        change: function (type) {
+          if (type === 'img') {
+            this.data = {
+              type: 'img',
+              url: 'https://raw.githubusercontent.com/iview/iview/master/assets/logo.png'
+            }
+
+          }
+        }
+      },
+      created: function () {
+        this.change('img');
+      }
+    })
+  </script>
+
+
+</body>
+
+</html>
